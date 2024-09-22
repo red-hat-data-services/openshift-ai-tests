@@ -29,9 +29,13 @@ poetry run pytest -k test_name
 
 To override the matrix value, you can create your own `global_config` file and pass the necessary parameters.
 
-Example for AWS cluster:
+Example for ODH:
 
 `--tc-file=tests/global_config.py --product=ODH`
+
+```bash
+poetry run pytest -s --pdb --pdbcls=IPython.terminal.debugger:TerminalPdb -k test_base_isvc_base_class --tc=model_s3_bucket_name:<bucket name>
+```
 
 
 ### Setting log level in command line
