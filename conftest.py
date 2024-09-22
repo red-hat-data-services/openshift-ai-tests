@@ -1,15 +1,7 @@
 import logging
-import os
-import pathlib
 import shutil
 
 import pytest
-from ocp_resources.inference_service import InferenceService
-from ocp_resources.namespace import Namespace
-from ocp_resources.node_config_openshift_io import Node
-from ocp_resources.service import Service
-from ocp_resources.serving_runtime import ServingRuntime
-from simple_logger.logger import get_logger
 
 from utilities.pytest_utils import (
     separator,
@@ -17,14 +9,6 @@ from utilities.pytest_utils import (
 
 LOGGER = logging.getLogger(__name__)
 BASIC_LOGGER = logging.getLogger("basic")
-
-RESOURCES_TO_COLLECT_INFO = [
-    InferenceService,
-    ServingRuntime,
-    Service,
-    Namespace,
-    Node,
-]
 
 
 def pytest_report_teststatus(report, config):  # type: ignore
@@ -59,18 +43,6 @@ def pytest_runtest_setup(item):  # type: ignore
         previousfailed = getattr(item.parent, "_previousfailed", None)
         if previousfailed is not None:
             pytest.xfail("previous test failed (%s)" % previousfailed.name)
-
-
-def pytest_sessionstart(session):  # type: ignore
-    tests_log_file = session.config.getoption("pytest_log_file")
-    if os.path.exists(tests_log_file):
-        pathlib.Path(tests_log_file).unlink()
-
-    session.config.option.log_listener = get_logger(
-        name=__name__,
-        filename=tests_log_file,
-        level=session.config.getoption("log_cli_level") or logging.INFO,
-    )
 
 
 def pytest_sessionfinish(session, exitstatus):  # type: ignore
