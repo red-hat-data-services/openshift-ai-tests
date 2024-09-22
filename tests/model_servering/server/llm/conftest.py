@@ -11,6 +11,7 @@ from ocp_resources.serving_runtime import ServingRuntime
 from pytest_testconfig import config as py_config
 
 from tests.model_servering.server.llm.utils import base64_encode_str
+from utilities.constants import TRANSFORMERS_CACHE_ENV_VAR
 from utilities.inference_service import InferenceServiceForTests
 
 
@@ -117,14 +118,14 @@ def serving_runtime(
             "image": "quay.io/modh/text-generation-inference@sha256:792e1500548c293eae428cf079fce836e68fbf7d4f7a53b5958c5158a70edfbf",
             "command": ["text-generation-launcher"],
             "args": ["--model-name=/mnt/models/artifacts/"],
-            "env": [{"name": "TRANSFORMERS_CACHE", "value": "/tmp/transformers_cache"}],
+            "env": [TRANSFORMERS_CACHE_ENV_VAR],
         },
         {
             "name": "transformer-container",
             "image": "quay.io/modh/caikit-tgis-serving@sha256:3a2477e143c494280a81e50c31adb54fc9f2fd0a84dde3b31cf9f6929fb2d1f9",
             "env": [
                 {"name": "RUNTIME_LOCAL_MODELS_DIR", "value": "/mnt/models"},
-                {"name": "TRANSFORMERS_CACHE", "value": "/tmp/transformers_cache"},
+                TRANSFORMERS_CACHE_ENV_VAR,
                 {"name": "RUNTIME_GRPC_ENABLED", "value": "true"},
                 {"name": "RUNTIME_HTTP_ENABLED", "value": "false"},
             ],
