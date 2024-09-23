@@ -15,27 +15,27 @@ class MinioPod(Pod):
         super().__init__(
             name=MINIO,
             namespace=namespace,
-            containers = [
-                            {
-                                "args": [
-                                    "server",
-                                    "/data1",
-                                ],
-                                "env": [
-                                    {
-                                        "name": "MINIO_ACCESS_KEY",
-                                        "value": "THEACCESSKEY",
-                                    },
-                                    {
-                                        "name": "MINIO_SECRET_KEY",
-                                        "value": "THESECRETKEY",
-                                    },
-                                ],
-                                "image": "quay.io/trustyai/modelmesh-minio-examples@"
-                                "sha256:e8360ec33837b347c76d2ea45cd4fea0b40209f77520181b15e534b101b1f323",
-                                "name": MINIO,
-                            }
-                        ],
+            containers=[
+                {
+                    "args": [
+                        "server",
+                        "/data1",
+                    ],
+                    "env": [
+                        {
+                            "name": "MINIO_ACCESS_KEY",
+                            "value": "THEACCESSKEY",
+                        },
+                        {
+                            "name": "MINIO_SECRET_KEY",
+                            "value": "THESECRETKEY",
+                        },
+                    ],
+                    "image": "quay.io/trustyai/modelmesh-minio-examples@"
+                    "sha256:e8360ec33837b347c76d2ea45cd4fea0b40209f77520181b15e534b101b1f323",
+                    "name": MINIO,
+                }
+            ],
             label={"app": "minio", "maistra.io/expose-route": "true"},
             annotations={"sidecar.istio.io/inject": "true"},
             **kwargs,
@@ -44,7 +44,8 @@ class MinioPod(Pod):
 
 class MinioService(Service):
     def __init__(self, namespace: str, **kwargs) -> None:
-        super().__init__(name="minio",
+        super().__init__(
+            name="minio",
             namespace=namespace,
             ports=[
                 {
@@ -56,7 +57,8 @@ class MinioService(Service):
             ],
             selector={
                 "app": "minio",
-            })
+            },
+        )
 
 
 class MinioSecret(Secret):
@@ -78,4 +80,5 @@ class MinioSecret(Secret):
             annotations={
                 f"{OPENDATAHUB_IO}/connection-type": "s3",
                 "openshift.io/display-name": "Minio Data Connection",
-            },)
+            },
+        )

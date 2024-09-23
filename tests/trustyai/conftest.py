@@ -25,5 +25,7 @@ def minio_secret(model_namespace: Namespace) -> Generator[MinioSecret]:
 
 
 @pytest.fixture(scope="class")
-def minio_data_connection(minio_service: MinioService, minio_pod: MinioPod, minio_secret: MinioSecret) -> Generator[MinioSecret]:
+def minio_data_connection(
+    minio_service: MinioService, minio_pod: MinioPod, minio_secret: MinioSecret
+) -> Generator[MinioSecret]:
     yield
