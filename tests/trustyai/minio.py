@@ -43,7 +43,7 @@ class MinioPod(Pod):
 
 
 class MinioService(Service):
-    def __init__(self, namespace: str, **kwargs) -> None:
+    def __init__(self, namespace: str, **kwargs: Any) -> None:
         super().__init__(
             name="minio",
             namespace=namespace,
@@ -65,7 +65,7 @@ class MinioSecret(Secret):
     def __init__(self, namespace: str, **kwargs: Any) -> None:
         super().__init__(
             name="aws-connection-minio-data-connection",
-            namespace=namespace.name,
+            namespace=namespace,
             data_dict={
                 "AWS_ACCESS_KEY_ID": "VEhFQUNDRVNTS0VZ",
                 "AWS_DEFAULT_REGION": "dXMtc291dGg=",

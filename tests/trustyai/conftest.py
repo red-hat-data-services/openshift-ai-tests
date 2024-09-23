@@ -28,4 +28,4 @@ def minio_secret(model_namespace: Namespace) -> Generator[MinioSecret]:
 def minio_data_connection(
     minio_service: MinioService, minio_pod: MinioPod, minio_secret: MinioSecret
 ) -> Generator[MinioSecret]:
-    yield
+    yield minio_secret
