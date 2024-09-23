@@ -1,8 +1,8 @@
 from typing import List
 
+from ocp_resources.maria_db import MariaDB
 from ocp_resources.mariadb_operator import MariadbOperator
 from ocp_resources.pod import Pod
-from ocp_utilities.monitoring import TIMEOUT_2MIN
 from ocp_utilities.operators import TIMEOUT_5MIN
 from timeout_sampler import TimeoutSampler, TimeoutExpiredError
 import logging
@@ -11,7 +11,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 def wait_for_mariadb_operator_pods(mariadb_operator: MariadbOperator, timeout: int = 300) -> None:
-    def _check_if_mariadb_operator_pods_ready():
+    def _check_if_mariadb_operator_pods_ready() -> bool:
         expected_pods: List[str] = [
             "mariadb-operator",
             "mariadb-operator-cert-controller",
@@ -45,11 +45,11 @@ def wait_for_mariadb_operator_pods(mariadb_operator: MariadbOperator, timeout: i
             if sample:
                 break
     except TimeoutExpiredError:
-        LOGGER.error(f"MariaDB Operator pods are not ready.")
+        LOGGER.error("MariaDB Operator pods are not ready.")
         raise
 
 
-def wait_for_mariadb_pods(mariadb, timeout: int = 300) -> None:
+def wait_for_mariadb_pods(mariadb: MariaDB, timeout: int = 300) -> None:
     def _check_if_mariadb_pods_ready() -> bool:
         namespace = mariadb.namespace
         label_key = "app.kubernetes.io/instance"

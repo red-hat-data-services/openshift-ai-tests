@@ -116,7 +116,7 @@ def minio_data_connection(
 
 
 @pytest.fixture(scope="class")
-def db_credentials(model_namespace):
+def db_credentials(model_namespace: Namespace) -> Generator[Secret]:
     with Secret(
         name="db-credentials",
         namespace=model_namespace.name,
@@ -134,7 +134,7 @@ def db_credentials(model_namespace):
 
 
 @pytest.fixture(scope="session")
-def mariadb_operator() -> Generator:
+def mariadb_operator() -> Generator[Any]:
     client = get_client()
     name = "mariadb-operator"
     namespace = "openshift-operators"
@@ -164,63 +164,30 @@ def mariadb_operator_cr(
             "caValidity": "35064h",
             "certValidity": "8766h",
             "ha": {"enabled": False, "replicas": 3},
-            "image": {
-                "pullPolicy": "IfNotPresent",
-                "repository": "ghcr.io/mariadb-operator/mariadb-operator"
-            },
+            "image": {"pullPolicy": "IfNotPresent", "repository": "ghcr.io/mariadb-operator/mariadb-operator"},
             "lookaheadValidity": "2160h",
             "requeueDuration": "5m",
-            "serviceAccount": {
-                "automount": True,
-                "enabled": True
-            },
-            "serviceMonitor": {
-                "enabled": True,
-                "interval": "30s",
-                "scrapeTimeout": "25s"
-            }
+            "serviceAccount": {"automount": True, "enabled": True},
+            "serviceMonitor": {"enabled": True, "interval": "30s", "scrapeTimeout": "25s"},
         },
         cluster_name="cluster.local",
-        image={
-            "pullPolicy": "IfNotPresent",
-            "repository": "ghcr.io/mariadb-operator/mariadb-operator"
-        },
+        image={"pullPolicy": "IfNotPresent", "repository": "ghcr.io/mariadb-operator/mariadb-operator"},
         log_level="INFO",
-        metrics={
-            "enabled": False,
-            "serviceMonitor": {
-                "enabled": True,
-                "interval": "30s",
-                "scrapeTimeout": "25s"
-            }
-        },
+        metrics={"enabled": False, "serviceMonitor": {"enabled": True, "interval": "30s", "scrapeTimeout": "25s"}},
         rbac={"enabled": True},
-        service_account={
-            "automount": True,
-            "enabled": True
-        },
+        service_account={"automount": True, "enabled": True},
         webhook={
             "cert": {
                 "caPath": "/tmp/k8s-webhook-server/certificate-authority",
-                "path": "/tmp/k8s-webhook-server/serving-certs"
+                "path": "/tmp/k8s-webhook-server/serving-certs",
             },
             "ha": {"enabled": False, "replicas": 3},
             "hostNetwork": False,
-            "image": {
-                "pullPolicy": "IfNotPresent",
-                "repository": "ghcr.io/mariadb-operator/mariadb-operator"
-            },
+            "image": {"pullPolicy": "IfNotPresent", "repository": "ghcr.io/mariadb-operator/mariadb-operator"},
             "port": 10250,
-            "serviceAccount": {
-                "automount": True,
-                "enabled": True
-            },
-            "serviceMonitor": {
-                "enabled": True,
-                "interval": "30s",
-                "scrapeTimeout": "25s"
-            }
-        }
+            "serviceAccount": {"automount": True, "enabled": True},
+            "serviceMonitor": {"enabled": True, "interval": "30s", "scrapeTimeout": "25s"},
+        },
     ) as mariadb_operator:
         mariadb_operator.wait_for_condition(
             condition="Deployed", status=mariadb_operator.Condition.Status.TRUE, timeout=10 * 60
@@ -230,31 +197,16 @@ def mariadb_operator_cr(
 
 
 @pytest.fixture(scope="class")
-def mariadb(
-    model_namespace: Namespace,
-    db_credentials: Secret,
-    mariadb_operator_cr: MariadbOperator
-) -> MariaDB:
+def mariadb(model_namespace: Namespace, db_credentials: Secret, mariadb_operator_cr: MariadbOperator) -> MariaDB:
     with MariaDB(
         name="mariadb",
         namespace=model_namespace.name,
-        connection={
-            "secretName": "mariadb-conn",
-            "secretTemplate": {
-                "key": "dsn"
-            }
-        },
+        connection={"secretName": "mariadb-conn", "secretTemplate": {"key": "dsn"}},
         database="trustyai_database",
-        galera={
-            "enabled": False
-        },
+        galera={"enabled": False},
         metrics={
             "enabled": False,
-            "passwordSecretKeyRef": {
-                "generate": True,
-                "key": "password",
-                "name": "mariadb-metrics"
-            }
+            "passwordSecretKeyRef": {"generate": True, "key": "password", "name": "mariadb-metrics"},
         },
         my_cnf="""
             [mariadb]
@@ -265,45 +217,17 @@ def mariadb(
             innodb_buffer_pool_size=1024M
             max_allowed_packet=256M
             """,
-        password_secret_key_ref={
-            "generate": False,
-            "key": "databasePassword",
-            "name": "db-credentials"
-        },
-        primary_connection={
-            "secretName": "mariadb-conn-primary",
-            "secretTemplate": {
-                "key": "dsn"
-            }
-        },
-        primary_service={
-            "type": "ClusterIP"
-        },
+        password_secret_key_ref={"generate": False, "key": "databasePassword", "name": "db-credentials"},
+        primary_connection={"secretName": "mariadb-conn-primary", "secretTemplate": {"key": "dsn"}},
+        primary_service={"type": "ClusterIP"},
         replicas=1,
-        root_password_secret_key_ref={
-            "generate": False,
-            "key": "databasePassword",
-            "name": "db-credentials"
-        },
-        secondary_connection={
-            "secretName": "mariadb-conn-secondary",
-            "secretTemplate": {
-                "key": "dsn"
-            }
-        },
-        secondary_service={
-            "type": "ClusterIP"
-        },
-        service={
-            "type": "ClusterIP"
-        },
-        storage={
-            "size": "1Gi"
-        },
-        update_strategy={
-            "type": "ReplicasFirstPrimaryLast"
-        },
-        username="quarkus"
+        root_password_secret_key_ref={"generate": False, "key": "databasePassword", "name": "db-credentials"},
+        secondary_connection={"secretName": "mariadb-conn-secondary", "secretTemplate": {"key": "dsn"}},
+        secondary_service={"type": "ClusterIP"},
+        service={"type": "ClusterIP"},
+        storage={"size": "1Gi"},
+        update_strategy={"type": "ReplicasFirstPrimaryLast"},
+        username="quarkus",
     ) as mariadb:
         wait_for_mariadb_pods(mariadb=mariadb)
         yield mariadb
