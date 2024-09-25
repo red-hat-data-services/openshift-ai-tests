@@ -13,7 +13,7 @@ class MinioPod(Pod):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(
             name=MINIO,
-            namespace=kwargs['namespace'],
+            namespace=kwargs["namespace"],
             containers=[
                 {
                     "args": [
@@ -45,7 +45,7 @@ class MinioService(Service):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(
             name=MINIO,
-            namespace=kwargs['namespace'],
+            namespace=kwargs["namespace"],
             ports=[
                 {
                     "name": "minio-client-port",
@@ -64,7 +64,7 @@ class MinioSecret(Secret):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(
             name="aws-connection-minio-data-connection",
-            namespace=kwargs['namespace'],
+            namespace=kwargs["namespace"],
             data_dict={
                 "AWS_ACCESS_KEY_ID": "VEhFQUNDRVNTS0VZ",
                 "AWS_DEFAULT_REGION": "dXMtc291dGg=",
