@@ -7,14 +7,13 @@ from ocp_resources.service import Service
 
 MINIO: str = "minio"
 OPENDATAHUB_IO: str = "opendatahub.io"
-MINIO_DATA_CONNECTION_NAME: str = "aws-connection-minio-data-connection"
 
 
 class MinioPod(Pod):
-    def __init__(self, namespace: str, **kwargs: Any) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         super().__init__(
             name=MINIO,
-            namespace=namespace,
+            namespace=kwargs['namespace'],
             containers=[
                 {
                     "args": [
@@ -36,17 +35,17 @@ class MinioPod(Pod):
                     "name": MINIO,
                 }
             ],
-            label={"app": "minio", "maistra.io/expose-route": "true"},
+            label={"app": MINIO, "maistra.io/expose-route": "true"},
             annotations={"sidecar.istio.io/inject": "true"},
             **kwargs,
         )
 
 
 class MinioService(Service):
-    def __init__(self, namespace: str, **kwargs: Any) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         super().__init__(
-            name="minio",
-            namespace=namespace,
+            name=MINIO,
+            namespace=kwargs['namespace'],
             ports=[
                 {
                     "name": "minio-client-port",
@@ -56,16 +55,16 @@ class MinioService(Service):
                 }
             ],
             selector={
-                "app": "minio",
+                "app": MINIO,
             },
         )
 
 
 class MinioSecret(Secret):
-    def __init__(self, namespace: str, **kwargs: Any) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         super().__init__(
             name="aws-connection-minio-data-connection",
-            namespace=namespace,
+            namespace=kwargs['namespace'],
             data_dict={
                 "AWS_ACCESS_KEY_ID": "VEhFQUNDRVNTS0VZ",
                 "AWS_DEFAULT_REGION": "dXMtc291dGg=",
