@@ -108,6 +108,6 @@ def minio_secret(admin_client: DynamicClient, model_namespace: Namespace) -> Gen
 
 @pytest.fixture(scope="class")
 def minio_data_connection(
-    minio_service: MinioService, minio_pod: MinioPod, minio_secret: MinioSecret
-) -> Generator[MinioSecret]:
+    minio_service: Service, minio_pod: Pod, minio_secret: Secret
+) -> Generator[Secret]:
     yield minio_secret
